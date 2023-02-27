@@ -170,7 +170,7 @@ struct ContentView: View {
         }
         
         // Screen will only hold a maximum of 11 characters
-        if screenText.count >= 11 {
+        if (screenText.count >= 11 && symbol == "") || (symbol != "" && number2.count >= 11) {
             return
         }
         
@@ -195,7 +195,7 @@ struct ContentView: View {
     
     // This function deterines if adding a decimal is valid
     func addDecimal(key:String){
-        if screenText == "0" && key == "."{
+        if (screenText == "0" && key == "."){
             screenText += key
             
             if symbol == "" {
@@ -204,6 +204,18 @@ struct ContentView: View {
             else{
                 number2 = screenText
             }
+        }
+        
+        else if symbol != "" && number2 == ""{
+            screenText = "0."
+            
+            if symbol == "" {
+                number1 = screenText
+            }
+            else{
+                number2 = screenText
+            }
+            
         }
         else if !screenText.contains(".") && key == "."{
             screenText += key
@@ -267,27 +279,34 @@ struct ContentView: View {
     }
     
     func formatResult(value:Double, key:String){
-        var result = value
+        var result = ""
         
-        if (String(value).count > 11){
-                screenText = "Error"
-            }
-        else{
-            // Display result to user
-            let formatter = NumberFormatter()
-            formatter.minimumFractionDigits = 0
-            formatter.maximumFractionDigits = 5
-            
-            screenText = formatter.string(from: result as NSNumber)!
+        // Display result to user
+        let formatter = NumberFormatter()
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 5
+        
+        result = formatter.string(from: value as NSNumber)!
+        
+        if result.count <= 11{
+            // Update display to show final formated result
+            screenText = result
             // Store result as value 1 and revert value 2 to undefined. Calculator is ready to calculate another expression
-            number1 = String(value)
+            number1 = result
             number2 = ""
+        }
+        else{
+            // If final result is greater than 11 character return error message
+            screenText = "Error"
         }
         
         // If user clicked on second opertor symbol, update the symbol value after evaluating previous expresion
         if checkIfArithmicOperator(str: key){
             symbol = key
             print(key)
+        }
+        else{
+            symbol = ""
         }
 
         
