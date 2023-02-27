@@ -267,12 +267,18 @@ struct ContentView: View {
     }
     
     func formatResult(value:Double, key:String){
+        var result = value
+        
         if (String(value).count > 11){
                 screenText = "Error"
             }
         else{
             // Display result to user
-            screenText = String(value)
+            let formatter = NumberFormatter()
+            formatter.minimumFractionDigits = 0
+            formatter.maximumFractionDigits = 5
+            
+            screenText = formatter.string(from: result as NSNumber)!
             // Store result as value 1 and revert value 2 to undefined. Calculator is ready to calculate another expression
             number1 = String(value)
             number2 = ""
