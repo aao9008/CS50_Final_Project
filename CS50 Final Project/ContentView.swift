@@ -9,15 +9,16 @@ import SwiftUI
 
 
 let rows = [["C", "%", "÷","DEL"],
-            ["7","8", "9", "\u{00D7}"],
-            ["4","5","6", "\u{2212}"],
+            ["7","8", "9", "×"],
+            ["4","5","6", "-"],
             ["1", "2", "3", "+"],
             [".", "0", "\u{00B1}", "="]]
 
 struct ContentView: View {
     
-    @State var value = "0"
-    @State var value2 = ""
+    @State var screenText = "0"
+    @State var number1 = ""
+    @State var number2 = ""
     @State var symbol = ""
     
     var body: some View {
@@ -27,7 +28,7 @@ struct ContentView: View {
             VStack(spacing: 0.0){
                 // Vstack for screen
                 VStack{
-                    Text(value)
+                    Text(screenText)
                         .foregroundColor(.white)
                         .font(.system(size:78, weight: .light))
                         .lineLimit(1)
@@ -54,6 +55,10 @@ struct ContentView: View {
                                         displayValue(key: column)
                                         
                                         addDecimal(key: column)
+                                        
+                                        getOperator(key: column)
+                                        
+                                        calculate(key: column)
                                         
                                         if column == "C"{
                                             clearValue()
@@ -107,7 +112,17 @@ struct ContentView: View {
     // This function checks if a button is an operator
     func checkIfOperator(str:String) -> Bool {
         
-        if str == "÷" || str == "×" || str == "−" || str == "+" || str == "=" || str == "DEL" || str == "%" || str == "C" || str == "\u{00B1}"{
+        if str == "÷" || str == "×" || str == "-" || str == "+" || str == "=" || str == "DEL" || str == "%" || str == "C" || str == "\u{00B1}"{
+            return true
+        }
+        
+        return false
+    }
+    
+    // Check if key is an arithmic operator
+    func checkIfArithmicOperator(str:String) -> Bool {
+        
+        if str == "÷" || str == "×" || str == "-" || str == "+"{
             return true
         }
         
@@ -116,14 +131,35 @@ struct ContentView: View {
     
     // This function clears the calculator
     func clearValue(){
-        value = "0"
+        screenText = "0"
+        number1 = ""
+        number2 = ""
+        symbol = ""
     }
     
     // This function will delete the last character on the screen
     func deleteChar(){
-        if value.count != 1 {
-            value = String(value.dropLast())
+        if screenText.count > 1 {
+            screenText = String(screenText.dropLast())
+            if symbol == "" {
+                number1 = screenText
+            }
+            else{
+                number2 = screenText
+            }
         }
+        else if screenText.count == 1{
+            screenText = "0"
+            
+            if symbol == "" {
+                number1 = screenText
+            }
+            else{
+                number2 = screenText
+            }
+        }
+        
+      
     }
     
     // This function updates the calcualtor screen
@@ -134,28 +170,121 @@ struct ContentView: View {
         }
         
         // Screen will only hold a maximum of 11 characters
-        if value.count < 11 {
-            // If screen is in intial state, clear default value
-            if value == "0"{
-                value = key
-            }
-            // Append character if screen is not on default value
-            else{
-                value += key
-            }
-            
+        if screenText.count >= 11 {
+            return
         }
+        
+        if screenText == "0" || (screenText == number1 && symbol != ""){
+            screenText = key
+        }
+        else{
+            screenText += key
+        }
+        
+        if symbol == "" {
+            number1 = screenText
+        }
+        else{
+            number2 = screenText
+        }
+        print(number1)
+        print(number2)
+        
         
     }
     
     // This function deterines if adding a decimal is valid
     func addDecimal(key:String){
-        if value == "0" && key == "."{
-            value += key
+        if screenText == "0" && key == "."{
+            screenText += key
+            
+            if symbol == "" {
+                number1 = screenText
+            }
+            else{
+                number2 = screenText
+            }
         }
-        else if !value.contains(".") && key == "."{
-            value += key
+        else if !screenText.contains(".") && key == "."{
+            screenText += key
+            
+            if symbol == "" {
+                number1 = screenText
+            }
+            else{
+                number2 = screenText
+            }
         }
+        
+    }
+    
+    
+    // This function will only update the operator value "symbol" if the second value has not been stored yet
+    func getOperator(key:String){
+        if checkIfArithmicOperator(str: key) && number2 == ""{
+            symbol = key
+            print(symbol)
+        }
+    }
+    
+    // Evaluate expression
+    func calculate(key:String){
+        let floatValue1 = (number1 as NSString).doubleValue
+        let floatValue2 = (number2 as NSString).doubleValue
+        var result: Double = 0
+        
+        // TEE HEE, this is my first easter egg!
+        if ( key == "="  && number2 == ""){
+            if (screenText == "8008132" || screenText == "800813"){
+                screenText = "BOOBIES"
+                return;
+            }
+            // Allows user to hit minus, then input value and evaluate to get a negative.
+            else{
+                result = floatValue1 * 2;
+                
+                formatResult(value: result, key: key)
+            }
+        }
+        
+        else if ( key == "=" || (checkIfArithmicOperator(str: key) && number2 != "")){
+            
+            if (number2 == "0" && symbol == "÷"){
+                screenText = "LMFAO";
+                return;
+            }
+            
+            switch symbol{
+            case "÷": result = floatValue1 / floatValue2
+            case "+": result = floatValue1 + floatValue2
+            case "×": result = floatValue1 * floatValue2
+            case "-": result = floatValue1 - floatValue2
+            default: return
+            }
+            
+            formatResult(value: result, key: key)
+        }
+    }
+    
+    func formatResult(value:Double, key:String){
+        if (String(value).count > 11){
+                screenText = "Error"
+            }
+        else{
+            // Display result to user
+            screenText = String(value)
+            // Store result as value 1 and revert value 2 to undefined. Calculator is ready to calculate another expression
+            number1 = String(value)
+            number2 = ""
+        }
+        
+        // If user clicked on second opertor symbol, update the symbol value after evaluating previous expresion
+        if checkIfArithmicOperator(str: key){
+            symbol = key
+            print(key)
+        }
+
+        
     }
     
     
