@@ -14,6 +14,9 @@ let rows = [["C", "%", "÷","DEL"],
             ["1", "2", "3", "+"],
             [".", "0", "\u{00B1}", "="]]
 
+let primaryColor = Color.init(red: 25/255, green: 42/255, blue: 86/255, opacity: 1.0)
+// rgba(25, 42, 86,1.0)
+
 struct ContentView: View {
     
     @State var screenText = "0"
@@ -37,7 +40,7 @@ struct ContentView: View {
                 .padding([.bottom, .trailing])
                 .ignoresSafeArea()
                 .frame(width: geometry.size.width * 1, height: geometry.size.height * 0.33, alignment: .bottomTrailing)
-                .background(.red)
+                .background(primaryColor)
                 
                 Spacer(minLength: 24)
                 
@@ -75,6 +78,8 @@ struct ContentView: View {
                                         .font(.system(size: 30))
                                         .frame(idealWidth: 100, maxWidth: .infinity, idealHeight: 100, maxHeight: .infinity, alignment: .center)
                                         
+                                    
+                                        
                                         
                                         
                                         
@@ -83,11 +88,8 @@ struct ContentView: View {
                                     .background(getBackground(str: column))
                                     .mask(CustomShape(radius: 40, value: column))
                                     
-                                    
-                    
-                                    
-                                    
                                 }
+                                
                             }
                         }
                     }
@@ -104,7 +106,7 @@ struct ContentView: View {
     func getBackground(str:String) -> Color {
         
         if checkIfOperator(str: str) {
-            return Color.red
+            return primaryColor
         }
         return Color.black
     }
@@ -164,6 +166,7 @@ struct ContentView: View {
     
     // This function updates the calcualtor screen
     func displayValue(key:String){
+        print("function display value")
         //This statement ensures only numbers are dispalyed on the screen
         if checkIfOperator(str: key) || key == "." || key == "\u{00B1}"{
             return
@@ -187,8 +190,8 @@ struct ContentView: View {
         else{
             number2 = screenText
         }
-        print(number1)
-        print(number2)
+        print("Number 1: \(number1)")
+        print("Number 2: \(number2)")
         
         
     }
@@ -206,7 +209,7 @@ struct ContentView: View {
             }
         }
         
-        else if symbol != "" && number2 == ""{
+        else if symbol != "" && number2 == "" && key == "."{
             screenText = "0."
             
             if symbol == "" {
