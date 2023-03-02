@@ -133,16 +133,24 @@ struct ContentView: View {
     
     // This function clears the calculator
     func clearValue(){
+        // Variable will be used to display user input on calculator screen
         screenText = "0"
+        
+        // These two variables will store user input and be evaluated later
         number1 = ""
         number2 = ""
+        
+        // This will hold the operator to be used and also signal the start of the users second input value. 
         symbol = ""
     }
     
     // This function will delete the last character on the screen
     func deleteChar(){
+        // Delete last number if it is not the last number on the screen.
         if screenText.count > 1 {
             screenText = String(screenText.dropLast())
+            
+            // Udpate value contianers
             if symbol == "" {
                 number1 = screenText
             }
@@ -150,9 +158,11 @@ struct ContentView: View {
                 number2 = screenText
             }
         }
+        // If there is only one number left, delete number and set screeen display to "0"
         else if screenText.count == 1{
             screenText = "0"
             
+            // Update value containers
             if symbol == "" {
                 number1 = screenText
             }
@@ -176,31 +186,32 @@ struct ContentView: View {
         if (screenText.count >= 11 && symbol == "") || (symbol != "" && number2.count >= 11) {
             return
         }
-        
+        // If screen is default clear screen and populate with user input
         if screenText == "0" || (screenText == number1 && symbol != ""){
             screenText = key
         }
+        // Append usr input if input to the screen if screen is not in default initialization phase.
         else{
             screenText += key
         }
         
+        // Route screen value to value containers for calculaton depending on operator tapped status
         if symbol == "" {
             number1 = screenText
         }
         else{
             number2 = screenText
         }
-        print("Number 1: \(number1)")
-        print("Number 2: \(number2)")
-        
-        
+     
     }
     
     // This function deterines if adding a decimal is valid
     func addDecimal(key:String){
+        // Append decimal if screen is in initial state
         if (screenText == "0" && key == "."){
             screenText += key
             
+            // Update value containers
             if symbol == "" {
                 number1 = screenText
             }
@@ -209,9 +220,11 @@ struct ContentView: View {
             }
         }
         
+        // If decimal key is first key tapped for the second number, display "0." instead of "."
         else if symbol != "" && number2 == "" && key == "."{
             screenText = "0."
             
+            // Update value containers
             if symbol == "" {
                 number1 = screenText
             }
@@ -220,9 +233,12 @@ struct ContentView: View {
             }
             
         }
+        
+        // For all other cases, if screen does not contain decimal, append deciaml.
         else if !screenText.contains(".") && key == "."{
             screenText += key
             
+            // Update value containers
             if symbol == "" {
                 number1 = screenText
             }
@@ -254,7 +270,7 @@ struct ContentView: View {
                 screenText = "BOOBIES"
                 return;
             }
-            // Allows user to hit minus, then input value and evaluate to get a negative.
+            // If user has not entered second number and hits enter, double the value on the screen.
             else{
                 result = floatValue1 * 2;
                 
@@ -262,13 +278,16 @@ struct ContentView: View {
             }
         }
         
+        // If operator key is tapped or "=" key is tapped, evaluate the expression
         else if ( key == "=" || (checkIfArithmicOperator(str: key) && number2 != "")){
             
+            // Do not evalute divison if the divisor is 0.
             if (number2 == "0" && symbol == "÷"){
                 screenText = "LMFAO";
                 return;
             }
             
+            // Use the symbol variable to determine which operation to perform.
             switch symbol{
             case "÷": result = floatValue1 / floatValue2
             case "+": result = floatValue1 + floatValue2
@@ -277,6 +296,7 @@ struct ContentView: View {
             default: return
             }
             
+            // Function give 5 decimal places of precision and diplays the result on the screen.
             formatResult(value: result, key: key)
         }
     }
@@ -306,7 +326,6 @@ struct ContentView: View {
         // If user clicked on second opertor symbol, update the symbol value after evaluating previous expresion
         if checkIfArithmicOperator(str: key){
             symbol = key
-            print(key)
         }
         else{
             symbol = ""
