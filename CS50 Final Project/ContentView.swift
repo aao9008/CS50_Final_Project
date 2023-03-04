@@ -18,10 +18,12 @@ let primaryColor = Color.init(red: 25/255, green: 42/255, blue: 86/255, opacity:
 // rgba(25, 42, 86,1.0)
 
 struct ContentView: View {
-    
+    // Variable will be used to display user input on calculator screen
     @State var screenText = "0"
+    // These two variables will store user input and be evaluated later
     @State var number1 = ""
     @State var number2 = ""
+    // This will hold the operator to be used and also signal the start of the users second input value.
     @State var symbol = ""
     
     var body: some View {
@@ -62,6 +64,10 @@ struct ContentView: View {
                                         getOperator(key: column)
                                         
                                         calculate(key: column)
+                                        
+                                        toPercent(key: column)
+                                        
+                                        invertSign(key: column)
                                         
                                         if column == "C"{
                                             clearValue()
@@ -133,14 +139,10 @@ struct ContentView: View {
     
     // This function clears the calculator
     func clearValue(){
-        // Variable will be used to display user input on calculator screen
-        screenText = "0"
         
-        // These two variables will store user input and be evaluated later
+        screenText = "0"
         number1 = ""
         number2 = ""
-        
-        // This will hold the operator to be used and also signal the start of the users second input value. 
         symbol = ""
     }
     
@@ -203,6 +205,59 @@ struct ContentView: View {
             number2 = screenText
         }
      
+    }
+    
+    // This function will inverse the sign of the number on the screen
+    func invertSign(key: String){
+        if key != "\u{00B1}" || screenText == "0" || (symbol != "" && number2 == ""){
+            return
+        }
+        
+        if  (screenText as NSString).doubleValue > 0{
+            screenText = "-" + screenText
+        }
+        else{
+            screenText.remove(at: screenText.startIndex)
+        }
+        
+        if symbol == "" {
+            number1 = screenText
+        }
+        else{
+            number2 = screenText
+        }
+        
+        
+    }
+    
+    // This function will convert the value on the screen to a percent
+    func toPercent(key: String){
+        if key != "%"{
+            return
+        }
+        
+        var result = (screenText as NSString).doubleValue / 100
+        
+        let formatter = NumberFormatter()
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 11
+        
+        var resultString = formatter.string(from: result as NSNumber)!
+        
+        if resultString.count > 11{
+            screenText = "Error"
+            return
+        }
+        
+        screenText = resultString
+        
+        // Update value containers
+        if symbol == "" {
+            number1 = screenText
+        }
+        else{
+            number2 = screenText
+        }
     }
     
     // This function deterines if adding a decimal is valid
