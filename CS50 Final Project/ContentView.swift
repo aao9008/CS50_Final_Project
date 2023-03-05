@@ -209,7 +209,7 @@ struct ContentView: View {
     
     // This function will inverse the sign of the number on the screen
     func invertSign(key: String){
-        if key != "\u{00B1}" || screenText == "0" || (symbol != "" && number2 == ""){
+        if key != "\u{00B1}" || (screenText as NSString).doubleValue  == 0 || (symbol != "" && number2 == ""){
             return
         }
         
@@ -236,13 +236,13 @@ struct ContentView: View {
             return
         }
         
-        var result = (screenText as NSString).doubleValue / 100
+        let result = (screenText as NSString).doubleValue / 100
         
         let formatter = NumberFormatter()
         formatter.minimumFractionDigits = 0
         formatter.maximumFractionDigits = 11
         
-        var resultString = formatter.string(from: result as NSNumber)!
+        let resultString = formatter.string(from: result as NSNumber)!
         
         if resultString.count > 11{
             screenText = "Error"
