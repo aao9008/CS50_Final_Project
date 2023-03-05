@@ -1,5 +1,5 @@
 # CS50 Final Project: iOS/iPad OS Calculator App
-#### Video Demo: <url here>
+#### Video Demo: https://youtu.be/si5lKF2r2Nw
 #### Description:
 
 Currently there is no native calculator app on the iPad and the options available on the app store require a purchase or contain ads. This project was created to provide a a simple but effective calculator for iPhones but more importantly also for the iPad. 
